@@ -4,17 +4,20 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "npx webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/jest": "^25.2.1",
     "@types/node": "^13.13.5",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
+    "jest": "^26.0.1",
     "source-map-loader": "^0.2.4",
+    "ts-jest": "^25.5.0",
     "ts-loader": "^7.0.3",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0",
