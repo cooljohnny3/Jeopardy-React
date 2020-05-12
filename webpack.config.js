@@ -20,6 +20,14 @@ module.exports = {
                     }
                 ]
             },
+            {
+                test: /\.css$/,
+                exclude: /node_modules/,
+                use: [
+                    "style-loader",    
+                    "css-loader"
+                ]
+            },
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             {
                 enforce: "pre",

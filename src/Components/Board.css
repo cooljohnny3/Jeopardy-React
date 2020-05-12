@@ -1,0 +1,30 @@
+.border {
+    background-color: black;
+}
+
+.board {
+    text-align: center;
+    color: yellow;
+    font-size: 18pt;
+    font-family: arial;
+}
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 8px;
+    padding: 8px;
+}
+
+.questions {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 8px;
+    padding: 8px;
+    padding-top: 0px;
+}
+
+.tile {
+    cursor: pointer;
+    background-color: blue;
+}

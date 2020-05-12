@@ -10,3 +10,5 @@ getData().then((questionData) => {
         document.getElementById("example")
     );
 });
+
+// TODO: add status for money amount
