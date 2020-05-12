@@ -2,10 +2,8 @@
 
 import * as React from 'react'
 
-import { Category } from '../Data';
-
-export interface CategoryTileProps { category: Category };
+export interface CategoryTileProps { category: string };
 
 export function CategoryTile(props: CategoryTileProps) {
-    return <div className="tile">{props.category.title}</div>
+    return <div className="categorytile">{props.category}</div>
 }

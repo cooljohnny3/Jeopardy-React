@@ -1,51 +1,46 @@
-// Board which holds tiles
-
-import * as React from 'react'
+import * as React from 'react';
 
 import { Question, Category } from '../Data';
 
-import {QuestionTile} from './QuestionTile';
+import {QuestionColumn} from './QuestionColumn';
 import {CategoryTile} from './CategoryTile';
 
 import './Board.css';
 
-export interface BoardProps {questions: Question[]}
+export interface BoardProps {categories: Category[]}
 
 export class Board extends React.Component<BoardProps> {
     constructor(props: BoardProps) {
         super(props);
-        console.log(props.questions);
     }
 
-    categoryTiles = this.getCategories().map((c, n) => 
-        <CategoryTile key={'category' + n} category={c}></CategoryTile>
+    categoryTiles = this.props.categories.map((c, n) => 
+        <CategoryTile key={'category ' + n} category={c.title.toUpperCase()}></CategoryTile>
     )
 
-    questionTiles = this.props.questions.map((q, n) => 
-        <QuestionTile key={'question' + n} question={q}></QuestionTile>
+    questionColumns = this.getQuestions().map((q, n) => 
+        <QuestionColumn key={'column ' + n} questions={q.slice(0,5)}></QuestionColumn>
     )
 
     render() {
         return (
-            <div className="border">
-                <div className="board">
-                    <div className="categories">
-                        {this.categoryTiles}
-                    </div>
-                    <div className="questions">
-                        {this.questionTiles}
-                    </div>
-                </div>
+        <div className="board">
+            <div className="categories">
+                {this.categoryTiles}
             </div>
+            <div className="questions">
+                {this.questionColumns}
+            </div>
+        </div>
         )
     }
 
-    getCategories(): Category[] {
-        let categories = [];
-        for(let q of this.props.questions) {
-            categories.push(q.category);
+    getQuestions(): Question[][] {
+        let questions = [];
+        for(let c of this.props.categories) {
+            questions.push(c.clues);
         }
         // console.log(categories);
-        return categories; 
+        return questions;
     }
 }
