@@ -29,5 +29,5 @@ export function getData() {
         })
         promises.push(promise);
     }
-    return Promise.all(promises).then((data) => {return data});
+    return Promise.all(promises);
 }
