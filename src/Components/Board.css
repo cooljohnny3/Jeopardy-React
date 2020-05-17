@@ -1,6 +1,7 @@
 .board {
     margin: auto;
-    width: 1080px;
+    height: 100%;
+    max-width: 1080px;
 }
 
 .board > div {
@@ -24,4 +25,9 @@
 
 .questiontile:last-child {
     margin-bottom: 0;
+}
+
+.statusbar {
+    position: relative;
+    bottom: 0;
 }

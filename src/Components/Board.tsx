@@ -4,10 +4,11 @@ import { getData, Question, Category } from '../Data';
 
 import {QuestionColumn} from './QuestionColumn';
 import {CategoryTile} from './CategoryTile';
+import {StatusBar} from './StatusBar'
 
 import './Board.css';
 
-interface BoardState {isLoading: boolean, error: string, name: string, score: number, data: Category[]}
+interface BoardState {isLoading: boolean, error: string, name: string, money: number, data: Category[]}
 
 export class Board extends React.Component<{}, BoardState> {
     constructor(props: any) {
@@ -16,7 +17,7 @@ export class Board extends React.Component<{}, BoardState> {
             isLoading: true,
             error: '',
             name: '',
-            score: 0,
+            money: 0,
             data: []
         };
     }
@@ -28,13 +29,13 @@ export class Board extends React.Component<{}, BoardState> {
     }
 
     render() {
-        const {isLoading, error, name, data, score} = this.state;
+        const {isLoading, error, name, data, money} = this.state;
         return (
             error ? <p>{error}</p> : 
-            !isLoading ? (
+            !isLoading ? 
                 <div className="board">
                     <div className="categories">
-                        {this.state.data.map((c, n) => 
+                        {data.map((c, n) => 
                         <CategoryTile key={'category ' + n} category={c.title.toUpperCase()}></CategoryTile>)}
                     </div>
                     <div className="questions">
@@ -42,7 +43,8 @@ export class Board extends React.Component<{}, BoardState> {
                         <QuestionColumn key={'column ' + n} questions={q.slice(0,5)}></QuestionColumn>
                         )}
                     </div>
-                </div>) : (
+                    <StatusBar name={name} money={money} />
+                </div> : (
                     <h3>Loading...</h3>
                 )
         )
