@@ -5,5 +5,5 @@ import * as React from 'react'
 export interface StatusProps { name: string, money: number };
 
 export function StatusBar(props: StatusProps) {
-    return <p className="statusbar">{props.name}: {props.money}</p>
+    return <p className="statusbar">{props.name} : {props.money}</p>
 }
