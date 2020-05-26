@@ -11,7 +11,7 @@ import {StatusBar} from './StatusBar';
 import './Board.css';
 import './Modal.css';
 
-interface BoardState {isLoading: boolean, error: string, name: string, money: number, data: Category[], showNameDialog: boolean}
+interface BoardState {isLoading: boolean, error: string, name: string, money: number, data: Category[], showNameDialog: boolean, nameEntryError: boolean}
 
 export class Board extends React.Component<{}, BoardState> {
     constructor(props: any) {
@@ -22,7 +22,8 @@ export class Board extends React.Component<{}, BoardState> {
             name: '',
             money: 0,
             data: [],
-            showNameDialog: true
+            showNameDialog: true,
+            nameEntryError: false
         };
 
         this.handleNameChange = this.handleNameChange.bind(this);
@@ -58,14 +59,14 @@ export class Board extends React.Component<{}, BoardState> {
             <Modal
                 className='name-modal'
                 show={showNameDialog}
+                backdrop={'static'}
             >
-                <div>
-                    <p>
-                        Enter your name:
-                    </p>
+                <form onSubmit={this.handleNameButtonClick}>
+                    <p>Enter your name:</p>
+                    {this.state.nameEntryError ? <p style={{color: 'red'}}>Please enter a valid name</p> : null }
                     <input type="text" defaultValue={this.state.name} onChange={this.handleNameChange}/>
-                    <button onClick={this.handleNameButtonClick}>Enter</button>
-                </div>
+                    <input type="submit" value="Enter"/>
+                </form>
             </Modal>
             {categories}
             {questions}        
@@ -93,7 +94,13 @@ export class Board extends React.Component<{}, BoardState> {
         this.setState({name: event.currentTarget.value}, () => console.log(this.state.name))
     }
 
-    handleNameButtonClick() {
-        this.setState({showNameDialog: false}, () => console.log(this.state.name));
+    handleNameButtonClick(event: React.FormEvent<HTMLFormElement>) {
+        if(this.state.name === '') {
+            this.setState({nameEntryError: true});
+            event.preventDefault();
+        }
+            
+        else
+            this.setState({showNameDialog: false, nameEntryError: false}, () => console.log(this.state.name));
     }
 }
