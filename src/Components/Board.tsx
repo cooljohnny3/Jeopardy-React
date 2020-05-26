@@ -4,12 +4,12 @@ import Modal from 'react-overlays/Modal';
 
 import { getData, Question, Category } from '../Data';
 
-import {NameEntryModal} from './NameEntryModal';
 import {QuestionColumn} from './QuestionColumn';
 import {CategoryTile} from './CategoryTile';
 import {StatusBar} from './StatusBar';
 
 import './Board.css';
+import './Modal.css';
 
 interface BoardState {isLoading: boolean, error: string, name: string, money: number, data: Category[], showNameDialog: boolean}
 
@@ -19,11 +19,14 @@ export class Board extends React.Component<{}, BoardState> {
         this.state = {
             isLoading: true,
             error: '',
-            name: 'default',
+            name: '',
             money: 0,
             data: [],
             showNameDialog: true
         };
+
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleNameButtonClick = this.handleNameButtonClick.bind(this);
     }
 
     componentDidMount() {
@@ -52,12 +55,18 @@ export class Board extends React.Component<{}, BoardState> {
 
         const board = (
         <div className="board">
-            {/* <NameEntryModal
-                showBox={true} 
-                onEnter={(enteredName: string) => 
-                    {this.setState({showNameDialog: false, name: enteredName})}
-                }
-            /> */}
+            <Modal
+                className='name-modal'
+                show={showNameDialog}
+            >
+                <div>
+                    <p>
+                        Enter your name:
+                    </p>
+                    <input type="text" defaultValue={this.state.name} onChange={this.handleNameChange}/>
+                    <button onClick={this.handleNameButtonClick}>Enter</button>
+                </div>
+            </Modal>
             {categories}
             {questions}        
             <StatusBar name={name} money={money} />
@@ -66,20 +75,25 @@ export class Board extends React.Component<{}, BoardState> {
 
         return (
             error ? 
-                <p>{error}</p> : 
-                !isLoading ? 
+                <p>{error}</p> : !isLoading ? 
                     board : 
                     <h3>Loading...</h3>
         )
     }
-
 
     getQuestions(): Question[][] {
         let questions = [];
         for(let c of this.state.data) {
             questions.push(c.clues);
         }
-        // console.log(categories);
         return questions;
+    }
+
+    handleNameChange(event: React.FormEvent<HTMLInputElement>) {
+        this.setState({name: event.currentTarget.value}, () => console.log(this.state.name))
+    }
+
+    handleNameButtonClick() {
+        this.setState({showNameDialog: false}, () => console.log(this.state.name));
     }
 }
