@@ -4,7 +4,10 @@ import { Question } from '../Data';
 
 import {QuestionTile} from './QuestionTile'
 
-export interface QuestionColumnProps {questions: Question[]}
+export interface QuestionColumnProps {
+    questions: Question[], 
+    openQuestion: CallableFunction
+}
 
 export class QuestionColumn extends React.Component<QuestionColumnProps> {
     constructor(props: QuestionColumnProps) {
@@ -12,7 +15,7 @@ export class QuestionColumn extends React.Component<QuestionColumnProps> {
     }
 
     questionTiles = this.props.questions.map((q, n) => 
-        <QuestionTile key={'question ' + n} question={q}></QuestionTile>
+        <QuestionTile key={'question ' + n} question={q} openQuestion={this.props.openQuestion}></QuestionTile>
     )
 
     render() {
