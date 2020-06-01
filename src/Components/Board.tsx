@@ -69,8 +69,8 @@ export class Board extends React.Component<{}, BoardState> {
                 </form>
             </Modal>
             {categories}
-            {questions}        
-            <StatusBar name={name} money={money} />
+            {questions}
+            {!this.state.showNameDialog ? <StatusBar name={name} money={money} />: null}
         </div>
         )
 
