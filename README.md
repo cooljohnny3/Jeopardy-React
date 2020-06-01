@@ -1,2 +1,4 @@
 # Jeopardy-React
-A Jeopardy game written in React using jservice.io
+A Jeopardy game written in React with Typescript using [jservice.io](http://jservice.io) API.
+
+
