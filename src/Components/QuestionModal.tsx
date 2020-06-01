@@ -22,7 +22,7 @@ export function QuesitonModal(props: QuesitonModalProps) {
 >
     <form onSubmit={(e) => props.handleAnswer(e)}>
         <p>{props.quesiton}</p>
-        {props.answerQuestionError ? <p style={{color: 'red'}}>Please enter a valid name</p> : null }
+        {props.answerQuestionError ? <p style={{color: 'red'}}>Please enter a valid answer</p> : null }
         <input type="text" onChange={(e) => props.handleAnswerChange(e)}/>
         <input type="submit" value="Enter"/>
     </form>

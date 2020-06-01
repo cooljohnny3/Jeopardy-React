@@ -145,12 +145,30 @@ export class Board extends React.Component<{}, BoardState> {
 
     handleQuestionAnswer(event: React.FormEvent<HTMLInputElement>) {
         event.preventDefault();
-        alert("Hello there");
-        this.setState({
-            showQuestionModal: false,
-            currentQuestion: '',
-            currentAnswer: '',
-            currentValue: 0
-        })
+
+        if (this.state.playerAnswer === '') {
+            this.setState({ answerQuestionError: true });
+        } else {
+            if(this.state.currentAnswer.toLowerCase() === this.state.playerAnswer.toLowerCase()) {
+                this.setState((state) => ({
+                    showQuestionModal: false,
+                    currentQuestion: '',
+                    currentAnswer: '',
+                    currentValue: 0,
+                    playerAnswer: '',
+                    money: state.money + state.currentValue
+                }));
+            } else {
+                this.setState((state) => ({
+                    showQuestionModal: false,
+                    currentQuestion: '',
+                    currentAnswer: '',
+                    currentValue: 0,
+                    playerAnswer: '',
+                    money: state.money - state.currentValue
+                }));
+            }            
+        }
+        
     }
 }
