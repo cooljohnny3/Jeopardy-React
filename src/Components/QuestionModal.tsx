@@ -16,7 +16,7 @@ export interface QuesitonModalProps {
 
 export function QuesitonModal(props: QuesitonModalProps) {
     return <Modal
-    className='name-modal'
+    className='modal'
     show={props.show}
     backdrop={'static'}
 >

@@ -10,7 +10,7 @@ export interface NameEntryModalProps { show: boolean, nameEntryError: boolean, h
 
 export function NameEntryModal(props: NameEntryModalProps) {
     return <Modal
-        className='name-modal'
+        className='modal'
         show={props.show}
         backdrop={'static'}
     >

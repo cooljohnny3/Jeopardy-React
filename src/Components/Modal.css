@@ -1,8 +1,8 @@
-.name-modal {
+.modal {
     position: fixed;
     max-width: max-content;
     z-index: 1040;
-    top: 50%;
+    top: 25%;
     left: 0;
     right: 0;
     margin-left: auto;
@@ -11,15 +11,4 @@
     background-color: white;
     padding: 20px;
     text-align: center;
-}
-
-.backdrop {
-    position: fixed;
-    z-index: 1040;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #000;
-    opacity: 0.5;
 }
