@@ -1,15 +1,13 @@
 import * as React from 'react';
 
-import Modal from 'react-overlays/Modal';
-
 import { getData, Question, Category } from '../Data';
 
 import {QuestionColumn} from './QuestionColumn';
 import {CategoryTile} from './CategoryTile';
 import {StatusBar} from './StatusBar';
+import {NameEntryModal} from './NameEntryModal';
 
 import './Board.css';
-import './Modal.css';
 
 interface BoardState {isLoading: boolean, error: string, name: string, money: number, data: Category[], showNameDialog: boolean, nameEntryError: boolean}
 
@@ -37,7 +35,7 @@ export class Board extends React.Component<{}, BoardState> {
     }
 
     render() {
-        const {isLoading, error, name, data, money, showNameDialog} = this.state;
+        const {isLoading, error, name, data, money, showNameDialog, nameEntryError} = this.state;
 
         const categories = (
             <div className="categories">
@@ -56,18 +54,12 @@ export class Board extends React.Component<{}, BoardState> {
 
         const board = (
         <div className="board">
-            <Modal
-                className='name-modal'
-                show={showNameDialog}
-                backdrop={'static'}
-            >
-                <form onSubmit={this.handleNameButtonClick}>
-                    <p>Enter your name:</p>
-                    {this.state.nameEntryError ? <p style={{color: 'red'}}>Please enter a valid name</p> : null }
-                    <input type="text" defaultValue={this.state.name} onChange={this.handleNameChange}/>
-                    <input type="submit" value="Enter"/>
-                </form>
-            </Modal>
+            <NameEntryModal 
+                show={showNameDialog} 
+                nameEntryError={nameEntryError}
+                handleClick={this.handleNameButtonClick}
+                handleNamechange={this.handleNameChange}
+            />
             {categories}
             {questions}
             {!this.state.showNameDialog ? <StatusBar name={name} money={money} />: null}
@@ -101,6 +93,6 @@ export class Board extends React.Component<{}, BoardState> {
         }
             
         else
-            this.setState({showNameDialog: false, nameEntryError: false}, () => console.log(this.state.name));
+            this.setState({showNameDialog: false, nameEntryError: false});
     }
 }
