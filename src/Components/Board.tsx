@@ -54,6 +54,11 @@ export class Board extends React.Component<{}, BoardState> {
 
     componentDidMount() {
         getData().then((d) => {
+            for(let cat of d) {
+                for(let i in cat.clues) {
+                    cat.clues[i].value = 100 * (parseInt(i)+1);
+                }
+            }
             this.setState({ isLoading: false, data: d });
         }).catch(error => this.setState({ error: error.toString(), isLoading: false }));
     }
