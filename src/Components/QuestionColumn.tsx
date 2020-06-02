@@ -3,22 +3,23 @@ import * as React from 'react'
 import { Question } from '../Data';
 
 import {QuestionTile} from './QuestionTile'
+import {BlankQuestionTile} from './BlankQuestionTile'
 
 export interface QuestionColumnProps {
     questions: Question[], 
     openQuestion: CallableFunction
 }
 
-export class QuestionColumn extends React.Component<QuestionColumnProps> {
-    constructor(props: QuestionColumnProps) {
-        super(props);
-    }
-
-    questionTiles = this.props.questions.map((q, n) => 
-        <QuestionTile key={'question ' + n} question={q} openQuestion={this.props.openQuestion}></QuestionTile>
+export function QuestionColumn(props: QuestionColumnProps) {
+    let questionTiles = props.questions.map((q, n) => 
+        q.id !== -1 ? 
+            <QuestionTile 
+                key={'question ' + n} 
+                question={q} 
+                openQuestion={props.openQuestion}
+            /> :
+            <BlankQuestionTile key={'question ' + n} />
     )
 
-    render() {
-        return <div className="questioncolumn">{this.questionTiles}</div>
-    }
+    return <div className="questioncolumn">{questionTiles}</div>
 }

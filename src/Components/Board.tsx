@@ -15,15 +15,14 @@ interface BoardState {
     error: string,
     name: string, 
     money: number, 
-    data: Category[], 
+    categories: Category[],
+    questions: Question[][];
     showNameDialog: boolean, 
     nameEntryError: boolean, 
     showQuestionModal: boolean, 
     answerQuestionError: boolean, 
     playerAnswer: string, 
-    currentQuestion: string, 
-    currentAnswer: string, 
-    currentValue: number
+    currentQuestion: Question | undefined
 }
 
 export class Board extends React.Component<{}, BoardState> {
@@ -34,15 +33,14 @@ export class Board extends React.Component<{}, BoardState> {
             error: '',
             name: '',
             money: 0,
-            data: [],
+            categories: [],
+            questions: [[]],
             showNameDialog: true,
             nameEntryError: false,
             showQuestionModal: false,
             answerQuestionError: false,
             playerAnswer: '',
-            currentQuestion: '',
-            currentAnswer: '',
-            currentValue: 0
+            currentQuestion: undefined
         };
 
         this.handleNameChange = this.handleNameChange.bind(this);
@@ -55,28 +53,35 @@ export class Board extends React.Component<{}, BoardState> {
     componentDidMount() {
         getData().then((d) => {
             for(let cat of d) {
+                if(cat.clues.length > 5) {
+                    cat.clues = cat.clues.slice(0, 5);
+                }
                 for(let i in cat.clues) {
                     cat.clues[i].value = 100 * (parseInt(i)+1);
                 }
             }
-            this.setState({ isLoading: false, data: d });
+            this.setState({ isLoading: false, categories: d, questions: this.getQuestions(d) });
         }).catch(error => this.setState({ error: error.toString(), isLoading: false }));
     }
 
     render() {
-        const { isLoading, error, name, data, money, showNameDialog, nameEntryError, showQuestionModal, answerQuestionError, currentQuestion } = this.state;
+        const { isLoading, error, name, categories, questions, money, showNameDialog, nameEntryError, showQuestionModal, answerQuestionError, currentQuestion } = this.state;
 
-        const categories = (
+        const categoryColumns = (
             <div className="categories">
-                {data.map((c, n) =>
+                {categories.map((c, n) =>
                     <CategoryTile key={'category ' + n} category={c.title.toUpperCase()}></CategoryTile>)}
             </div>
         )
 
-        const questions = (
+        const questionColumns = (
             <div className="questions">
-                {this.getQuestions().map((q, n) =>
-                    <QuestionColumn key={'column ' + n} questions={q.slice(0, 5)} openQuestion={this.openQuestion}/>
+                {questions.map((q, n) =>
+                    <QuestionColumn 
+                        key={'column ' + n} 
+                        questions={q} 
+                        openQuestion={this.openQuestion}
+                    />
                 )}
             </div>
         )
@@ -92,12 +97,12 @@ export class Board extends React.Component<{}, BoardState> {
                 <QuesitonModal
                     show={showQuestionModal}
                     answerQuestionError={answerQuestionError}
-                    quesiton={currentQuestion}
+                    quesiton={currentQuestion ? currentQuestion.question : 'Error opening current question'}
                     handleAnswer={this.handleQuestionAnswer}
                     handleAnswerChange={this.handleAnswerChange}
                 />
-                {categories}
-                {questions}
+                {categoryColumns}
+                {questionColumns}
                 {!this.state.showNameDialog ? <StatusBar name={name} money={money} /> : null}
             </div>
         )
@@ -110,9 +115,9 @@ export class Board extends React.Component<{}, BoardState> {
         )
     }
 
-    getQuestions(): Question[][] {
+    getQuestions(data: Category[]): Question[][] {
         let questions = [];
-        for (let c of this.state.data) {
+        for (let c of data) {
             questions.push(c.clues);
         }
         return questions;
@@ -132,13 +137,11 @@ export class Board extends React.Component<{}, BoardState> {
             this.setState({ showNameDialog: false, nameEntryError: false });
     }
 
-    openQuestion(question: string, answer: string, value: number) {
+    openQuestion(question: Question) {
         // Pull up modal with question and answer entry
         this.setState({
             showQuestionModal: true,
-            currentQuestion: question,
-            currentAnswer: answer,
-            currentValue: value
+            currentQuestion: question
         });
     }
 
@@ -151,28 +154,32 @@ export class Board extends React.Component<{}, BoardState> {
     handleQuestionAnswer(event: React.FormEvent<HTMLInputElement>) {
         event.preventDefault();
 
-        if (this.state.playerAnswer === '') {
+        let {playerAnswer, currentQuestion, categories} = this.state;
+
+        if (playerAnswer === '') {
             this.setState({ answerQuestionError: true });
         } else {
-            if(this.state.currentAnswer.toLowerCase() === this.state.playerAnswer.toLowerCase()) {
+            if(currentQuestion?.answer.toLowerCase() === this.state.playerAnswer.toLowerCase()) {
+                for(let cat of categories) {
+                    if(cat.clues.includes(currentQuestion)) {
+                        cat.clues[cat.clues.indexOf(currentQuestion)].id = -1;
+                        break;
+                    }
+                }
                 this.setState((state) => ({
                     showQuestionModal: false,
-                    currentQuestion: '',
-                    currentAnswer: '',
-                    currentValue: 0,
+                    currentQuestion: undefined,
                     playerAnswer: '',
-                    money: state.money + state.currentValue
+                    money: state.money + (state.currentQuestion ? state.currentQuestion.value : 0)
                 }));
             } else {
                 this.setState((state) => ({
                     showQuestionModal: false,
-                    currentQuestion: '',
-                    currentAnswer: '',
-                    currentValue: 0,
+                    currentQuestion: undefined,
                     playerAnswer: '',
-                    money: state.money - state.currentValue
+                    money: state.money - (state.currentQuestion ? state.currentQuestion.value : 0)
                 }));
-            }            
+            }          
         }
         
     }

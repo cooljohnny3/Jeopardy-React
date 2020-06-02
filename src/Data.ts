@@ -6,7 +6,6 @@ const MAX_CATEGORY_ID = 18418;
 export interface Category {
     id: number,
     title: string,
-    clues_count: number,
     clues: Question[]
 }
 
