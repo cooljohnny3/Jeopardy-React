@@ -170,13 +170,17 @@ export class Board extends React.Component<{}, BoardState> {
                     showQuestionModal: false,
                     currentQuestion: undefined,
                     playerAnswer: '',
+                    answerQuestionError: false,
                     money: state.money + (state.currentQuestion ? state.currentQuestion.value : 0)
                 }));
+                // Check if all questions answered
+
             } else {
                 this.setState((state) => ({
                     showQuestionModal: false,
                     currentQuestion: undefined,
                     playerAnswer: '',
+                    answerQuestionError: false,
                     money: state.money - (state.currentQuestion ? state.currentQuestion.value : 0)
                 }));
             }          
