@@ -7,22 +7,25 @@ import { CategoryTile } from './CategoryTile';
 import { StatusBar } from './StatusBar';
 import { NameEntryModal } from './NameEntryModal';
 import { QuesitonModal } from './QuestionModal';
+import { GameEndModal } from './GameEndModal';
 
 import './Board.css';
 
 interface BoardState {
     isLoading: boolean,
     error: string,
-    name: string, 
-    money: number, 
+    name: string,
+    money: number,
     categories: Category[],
     questions: Question[][];
-    showNameDialog: boolean, 
-    nameEntryError: boolean, 
-    showQuestionModal: boolean, 
-    answerQuestionError: boolean, 
-    playerAnswer: string, 
-    currentQuestion: Question | undefined
+    showNameDialog: boolean,
+    nameEntryError: boolean,
+    showQuestionModal: boolean,
+    answerQuestionError: boolean,
+    playerAnswer: string,
+    currentQuestion: Question | undefined,
+    cluesAnswered: number,
+    showGameEndModal: boolean
 }
 
 export class Board extends React.Component<{}, BoardState> {
@@ -40,7 +43,9 @@ export class Board extends React.Component<{}, BoardState> {
             showQuestionModal: false,
             answerQuestionError: false,
             playerAnswer: '',
-            currentQuestion: undefined
+            currentQuestion: undefined,
+            cluesAnswered: 0,
+            showGameEndModal: false
         };
 
         this.handleNameChange = this.handleNameChange.bind(this);
@@ -48,24 +53,15 @@ export class Board extends React.Component<{}, BoardState> {
         this.openQuestion = this.openQuestion.bind(this);
         this.handleAnswerChange = this.handleAnswerChange.bind(this);
         this.handleQuestionAnswer = this.handleQuestionAnswer.bind(this);
+        this.startGame = this.startGame.bind(this);
     }
 
     componentDidMount() {
-        getData().then((d) => {
-            for(let cat of d) {
-                if(cat.clues.length > 5) {
-                    cat.clues = cat.clues.slice(0, 5);
-                }
-                for(let i in cat.clues) {
-                    cat.clues[i].value = 100 * (parseInt(i)+1);
-                }
-            }
-            this.setState({ isLoading: false, categories: d, questions: this.getQuestions(d) });
-        }).catch(error => this.setState({ error: error.toString(), isLoading: false }));
+        this.startGame();
     }
 
     render() {
-        const { isLoading, error, name, categories, questions, money, showNameDialog, nameEntryError, showQuestionModal, answerQuestionError, currentQuestion } = this.state;
+        const { isLoading, error, name, categories, questions, money, showNameDialog, nameEntryError, showQuestionModal, answerQuestionError, currentQuestion, showGameEndModal } = this.state;
 
         const categoryColumns = (
             <div className="categories">
@@ -77,9 +73,9 @@ export class Board extends React.Component<{}, BoardState> {
         const questionColumns = (
             <div className="questions">
                 {questions.map((q, n) =>
-                    <QuestionColumn 
-                        key={'column ' + n} 
-                        questions={q} 
+                    <QuestionColumn
+                        key={'column ' + n}
+                        questions={q}
                         openQuestion={this.openQuestion}
                     />
                 )}
@@ -100,6 +96,11 @@ export class Board extends React.Component<{}, BoardState> {
                     quesiton={currentQuestion ? currentQuestion.question : 'Error opening current question'}
                     handleAnswer={this.handleQuestionAnswer}
                     handleAnswerChange={this.handleAnswerChange}
+                />
+                <GameEndModal
+                    show={showGameEndModal}
+                    handleClick={this.startGame}
+                    money={money}
                 />
                 {categoryColumns}
                 {questionColumns}
@@ -154,14 +155,14 @@ export class Board extends React.Component<{}, BoardState> {
     handleQuestionAnswer(event: React.FormEvent<HTMLInputElement>) {
         event.preventDefault();
 
-        let {playerAnswer, currentQuestion, categories} = this.state;
+        let { playerAnswer, currentQuestion, categories, cluesAnswered } = this.state;
 
         if (playerAnswer === '') {
             this.setState({ answerQuestionError: true });
         } else {
-            if(currentQuestion?.answer.toLowerCase() === this.state.playerAnswer.toLowerCase()) {
-                for(let cat of categories) {
-                    if(cat.clues.includes(currentQuestion)) {
+            if (currentQuestion?.answer.toLowerCase() === this.state.playerAnswer.toLowerCase()) {
+                for (let cat of categories) {
+                    if (cat.clues.includes(currentQuestion)) {
                         cat.clues[cat.clues.indexOf(currentQuestion)].id = -1;
                         break;
                     }
@@ -171,9 +172,16 @@ export class Board extends React.Component<{}, BoardState> {
                     currentQuestion: undefined,
                     playerAnswer: '',
                     answerQuestionError: false,
-                    money: state.money + (state.currentQuestion ? state.currentQuestion.value : 0)
+                    money: state.money + (state.currentQuestion ? state.currentQuestion.value : 0),
+                    cluesAnswered: state.cluesAnswered + 1
                 }));
                 // Check if all questions answered
+                // needs to be one less for whatever reason
+                if (cluesAnswered >= 29) {
+                    this.setState({
+                        showGameEndModal: true
+                    })
+                }
 
             } else {
                 this.setState((state) => ({
@@ -183,8 +191,35 @@ export class Board extends React.Component<{}, BoardState> {
                     answerQuestionError: false,
                     money: state.money - (state.currentQuestion ? state.currentQuestion.value : 0)
                 }));
-            }          
+            }
         }
-        
+    }
+
+    startGame() {
+        if (!this.state.isLoading) {
+            this.setState({
+                isLoading: true,
+                error: '',
+                name: '',
+                money: 0,
+                categories: [],
+                questions: [[]],
+                showNameDialog: true,
+                cluesAnswered: 0,
+                showGameEndModal: false
+            });
+        }
+
+        getData().then((d) => {
+            for (let cat of d) {
+                if (cat.clues.length > 5) {
+                    cat.clues = cat.clues.slice(0, 5);
+                }
+                for (let i in cat.clues) {
+                    cat.clues[i].value = 100 * (parseInt(i) + 1);
+                }
+            }
+            this.setState({ isLoading: false, categories: d, questions: this.getQuestions(d) });
+        }).catch(error => this.setState({ error: error.toString(), isLoading: false }));
     }
 }
