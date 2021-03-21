@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASEURL: string = 'http://jservice.io/api/';
+const BASEURL: string = 'https://jservice.io/api/';
 const MAX_CATEGORY_ID = 18418;
 
 export interface Category {
